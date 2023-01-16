@@ -1,16 +1,27 @@
 import http from "http"
+import url from "url";
 import { User } from "./src/user.js";
+import { validate as uuidValidate } from 'uuid'
 
 
 const hostname = "127.0.0.1";
 const port = 3000;
 
 const server = http.createServer((req, res) => {
-    let url = req.url
+    let method = req.method
+    let urlRequest = req.url
+    let urlArr = req.url.split('/')
+    let parameter;
+    if (urlArr.length === 4) {
+        parameter = urlArr[urlArr.length - 1]
+        urlArr.splice(urlArr.length - 1)
+        urlRequest = urlArr.join('/')
+    }
 
-    switch (url) {
-        case '/users':
-            if (req.method === 'POST') {
+    console.log(urlRequest, urlArr.length)
+    if (urlRequest === '/api/users') {
+        switch (method) {
+            case 'POST':
                 req.on('data', (data) => {
                     try {
 
@@ -23,19 +34,49 @@ const server = http.createServer((req, res) => {
                         console.log(e)
                     }
                 })
-            }
-            if (req.method === 'GET') {
-                res.statusCode = 200
-                res.setHeader("Content-Type", "json; charset=utf-8")
-                res.end(JSON.stringify(User.users))
-            }
+                break;
+            case 'GET':
+                if (parameter) {
+                    if (uuidValidate(parameter)) {
+                        const user = User.getUser(parameter)
+                        console.log(user)
+                        if (user) {
+                            res.statusCode = 200
+                            res.setHeader("Content-Type", "json; charset=utf-8")
+                            res.end(JSON.stringify(user))
+                        }
+                        else {
+                            res.statusCode = 404
+                            console.log('Eeeeeeeeeeeeeeeee')
+                            res.end('User not found')
+                        }
 
-            break
-        default:
-            res.statusCode = 400;
-            break
+                    }
+                    else {
+                        res.statusCode = 400
+                        // res.setHeader("Content-Type", "json; charset=utf-8")
+                        res.end('Failed ID')
+                    }
+
+                }
+                else {
+                    res.statusCode = 200
+                    res.setHeader("Content-Type", "json; charset=utf-8")
+                    res.end(JSON.stringify(User.users))
+                }
+
+                break
+            default:
+                res.statusCode = 400;
+                res.end("Bad")
+                break
+        }
+
     }
-
+    else {
+        res.statusCode = 400;
+        res.end("Bad")
+    }
 
 });
 server.listen(port, hostname, () => {

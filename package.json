@@ -11,10 +11,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nodemon": "^2.0.20"
+    "autocannon": "^7.10.0",
+    "nodemon": "^2.0.20",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "mocha": "^10.2.0", 
+    "mocha": "^10.2.0",
     "supertest": "6.3.3"
   }
 }
