@@ -30,7 +30,19 @@ describe('POST /users', function () {
     it('responds with json', function (done) {
         request(URL)
             .post('/users')
-            .send({ name: 'john', age: 80 })
+            .send({ name: 'john14', userName: "john14", age: 89, hobbies: ["read book", "sports"] })
+            .set('Accept', 'application/json')
+            .expect('Content-Type', 'json; charset=utf-8')
+            .expect(201)
+            .end(function (err, res) {
+                if (err) return done(err);
+                return done();
+            });
+    });
+    it('responds with json', function (done) {
+        request(URL)
+            .post('/users')
+            .send({ name: 'john', age: 80, hobbies: ["read book", "sports"] })
             .set('Accept', 'application/json')
             .expect('Content-Type', 'json; charset=utf-8')
             .expect(400)
@@ -39,6 +51,7 @@ describe('POST /users', function () {
                 return done();
             });
     });
+
 });
 
 describe('GET /users', function () {
@@ -49,7 +62,6 @@ describe('GET /users', function () {
             .expect(200)
             .end(function (err, res) {
                 if (err) return done(err);
-                users = JSON.parse(res.text)
                 return done();
             });
     });
@@ -75,10 +87,26 @@ describe('GET /users/{id}', function () {
                 return done();
             });
     });
-    it('user not found', function (done) {
-        const res = request(URL)
-            .get('/users');
-        console.log(res.body)
+    it('Get user by id', function (done) {
+        request(URL)
+            .get('/users')
+            .expect(200)
+            .end(function (err, res) {
+                if (err) return done(err);
+                let users = JSON.parse(res.text)
+                let user = users[Math.floor(Math.random() * (users.length - 1))]
+                console.log(user.id)
+                if (users) {
+                    request(URL)
+                        .get(`/users/${user.id}`)
+                        .expect(200)
+                        .end(function (err, res) {
+                            if (err) return done(err);
+                            console.log(res.text)
+                            return done();
+                        });
+                }
+            });
     });
 
 });
