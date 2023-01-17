@@ -2,11 +2,10 @@ import http from "http"
 import url from "url";
 import { User } from "./src/user.js";
 import { validate as uuidValidate } from 'uuid'
-
-
+import dotenv from 'dotenv'
+dotenv.config()
 const hostname = "127.0.0.1";
-const port = 3000;
-
+const port = process.env.PORT || 5000;
 const server = http.createServer((req, res) => {
     let method = req.method
     let urlRequest = req.url
@@ -78,8 +77,8 @@ const server = http.createServer((req, res) => {
                 res.end(remove.message)
                 break
             default:
-                res.statusCode = 400;
-                res.end("Bad")
+                res.statusCode = 404;
+                res.end("Page not found")
                 break
         }
 

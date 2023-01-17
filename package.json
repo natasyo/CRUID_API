@@ -5,13 +5,16 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha  --timeout 10000"
+    "test": "mocha  --timeout 10000",
+    "start:dev": "nodemon index.js",
+    "start:prod": "set NODE_ENV=production&&nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "autocannon": "^7.10.0",
+    "dotenv": "^16.0.3",
     "nodemon": "^2.0.20",
     "uuid": "^9.0.0"
   },
