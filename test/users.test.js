@@ -1,4 +1,6 @@
 import request from "supertest"
+import assert from "assert"
+
 
 const URL = 'http://127.0.0.1:3000/api'
 
@@ -95,14 +97,12 @@ describe('GET /users/{id}', function () {
                 if (err) return done(err);
                 let users = JSON.parse(res.text)
                 let user = users[Math.floor(Math.random() * (users.length - 1))]
-                console.log(user.id)
                 if (users) {
                     request(URL)
                         .get(`/users/${user.id}`)
                         .expect(200)
                         .end(function (err, res) {
                             if (err) return done(err);
-                            console.log(res.text)
                             return done();
                         });
                 }
@@ -111,3 +111,44 @@ describe('GET /users/{id}', function () {
 
 });
 
+
+describe('Delete /users/{id}', function () {
+
+    it('bad id', function (done) {
+        request(URL)
+            .delete('/users/6585')
+            .expect(400)
+            .end(function (err, res) {
+                if (err) return done(err);
+                return done();
+            });
+    });
+    it('user not found', function (done) {
+        request(URL)
+            .delete('/users/be8abf2a-722b-4ab7-9410-d45f70025058')
+            .expect(404)
+            .end(function (err, res) {
+                if (err) return done(err);
+                return done();
+            });
+    });
+
+
+    it('Delete user status 204', async function () {
+        let user = (await getUsers())[0]
+        const response = await request(URL)
+            .delete(`/users/${user.id}`)
+            .set('Accept', 'application/json')
+            .expect(204)
+
+
+    });
+
+});
+
+
+async function getUsers() {
+    let req = await request(URL).get('/users')
+    return JSON.parse(req.text);
+
+}

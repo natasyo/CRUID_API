@@ -12,20 +12,18 @@ const server = http.createServer((req, res) => {
     let urlRequest = req.url
     let urlArr = req.url.split('/')
     let parameter;
+
     if (urlArr.length === 4) {
         parameter = urlArr[urlArr.length - 1]
         urlArr.splice(urlArr.length - 1)
         urlRequest = urlArr.join('/')
     }
-
-    console.log(urlRequest, urlArr.length)
+    console.log(parameter)
     if (urlRequest === '/api/users') {
         switch (method) {
             case 'POST':
                 req.on('data', (data) => {
                     try {
-
-                        console.log(User.users)
                         res.statusCode = User.addUser(JSON.parse(data.toString()))
                         res.setHeader("Content-Type", "json; charset=utf-8");
                         res.end("User created");
@@ -39,7 +37,6 @@ const server = http.createServer((req, res) => {
                 if (parameter) {
                     if (uuidValidate(parameter)) {
                         const user = User.getUser(parameter)
-                        console.log(user)
                         if (user) {
                             res.statusCode = 200
                             res.setHeader("Content-Type", "json; charset=utf-8")
@@ -47,7 +44,6 @@ const server = http.createServer((req, res) => {
                         }
                         else {
                             res.statusCode = 404
-                            console.log('Eeeeeeeeeeeeeeeee')
                             res.end('User not found')
                         }
 
@@ -65,6 +61,15 @@ const server = http.createServer((req, res) => {
                     res.end(JSON.stringify(User.users))
                 }
 
+                break
+            case "PUT":
+                break;
+            case "DELETE":
+                let remove = User.removeUser(parameter)
+                console.log(remove)
+                res.statusCode = remove.status
+                res.setHeader("Content-Type", "json; charset=utf-8")
+                res.end(remove.message)
                 break
             default:
                 res.statusCode = 400;
