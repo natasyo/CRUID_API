@@ -18,7 +18,6 @@ const server = http.createServer((req, res) => {
         urlArr.splice(urlArr.length - 1)
         urlRequest = urlArr.join('/')
     }
-    console.log(parameter)
     if (urlRequest === '/api/users') {
         switch (method) {
             case 'POST':
@@ -63,10 +62,17 @@ const server = http.createServer((req, res) => {
 
                 break
             case "PUT":
+                req.on('data', (data) => {
+                    let userUpdate = JSON.parse(data.toString())
+                    let update = User.updateUser(userUpdate)
+                    console.log(update)
+                    res.setHeader("Content-Type", "json; charset=utf-8");
+                    res.statusCode = update.status
+                    res.end(update.message);
+                })
                 break;
             case "DELETE":
                 let remove = User.removeUser(parameter)
-                console.log(remove)
                 res.statusCode = remove.status
                 res.setHeader("Content-Type", "json; charset=utf-8")
                 res.end(remove.message)
